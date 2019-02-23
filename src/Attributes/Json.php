@@ -12,11 +12,11 @@ class Json extends Base
 {
     public function handle($attribute, $value, array $config): string
     {
-        return ' ' . $attribute . '="' . htmlentities(!empty($value[1]) ? json_encode($value[1]) : '{}') . '"';
+        return ' ' . $attribute . '="' . htmlentities(!empty($value['json']) ? json_encode($value['json']) : '{}') . '"';
     }
 
     public function shouldHandle($attribute, $value, array $config): bool
     {
-        return is_array($value) && count($value) === 2 && $value[0] === 'json';
+        return is_array($value) && array_key_exists('json', $value);
     }
 }

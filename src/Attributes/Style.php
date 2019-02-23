@@ -14,6 +14,11 @@ class Style extends Base
     {
         $style = [];
         foreach ($value as $prop => $propValue) {
+
+            if (is_callable($propValue)) {
+                $propValue = $propValue($config, $prop, $value, $attribute);
+            }
+
             if ($propValue === false) {
                 continue;
             }

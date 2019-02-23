@@ -47,7 +47,19 @@ class HtmlAttributeTest extends TestCase
         $this->assertEquals('<div class="class1 class2"></div>', $this->html()->render(['div', 'class' => ['class1', 'class2']]));
     }
 
-    public function testClassAttributeWillParseCallabke()
+    public function testClassAttributeWillSkipFalse()
+    {
+        $this->assertEquals('<div class="class1 class2"></div>', $this->html()->render(['div', 'class' => ['class1', false, 'class2']]));
+    }
+
+    public function testClassAttributeValueWillAllowCallable()
+    {
+        $this->assertEquals('<div class="class1 test"></div>', $this->html()->render(['div', 'class' => ['class1', false, function($config) {
+            return $config['class'];
+        }]], ['class' => 'test']));
+    }
+
+    public function testClassAttributeWillParseCallable()
     {
         $this->assertEquals('<div class="class1 class2"></div>', $this->html()->render(['div', 'class' => function($config) {
             return $config['class'];
@@ -71,13 +83,23 @@ class HtmlAttributeTest extends TestCase
         }], ['style' => ['background' => '#FFF']]));
     }
 
+
+    public function testStylePropWillParseCallable()
+    {
+        $this->assertEquals('<div style="background: #FFF"></div>', $this->html()->render(['div', 'style' => [
+            'background' => function($config) {
+                return $config['backgroundColor'];
+            }
+        ]], ['backgroundColor' => '#FFF']));
+    }
+
     public function testJsonInAttribute()
     {
-        $this->assertEquals('<div data-json="{}"></div>', $this->html()->render(['div', 'data-json' => ['json', []]]));
+        $this->assertEquals('<div data-json="{}"></div>', $this->html()->render(['div', 'data-json' => ['json' => []]]));
     }
 
     public function testJsonValueInAttribute()
     {
-        $this->assertEquals('<div data-json="{&quot;key&quot;:true}"></div>', $this->html()->render(['div', 'data-json' => ['json', ['key' => true]]]));
+        $this->assertEquals('<div data-json="{&quot;key&quot;:true}"></div>', $this->html()->render(['div', 'data-json' => ['json' => ['key' => true]]]));
     }
 }

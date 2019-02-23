@@ -12,7 +12,19 @@ class Classname extends Base
 {
     public function handle($attribute, $value, array $config): string
     {
-        return ' class="' . implode(' ', $value) . '"';
+        $results = [];
+        foreach ($value as $valueItem) {
+
+            if (is_callable($valueItem)) {
+                $valueItem = $valueItem($config, $attribute, $value);
+            }
+
+            if ($valueItem !== false) {
+                $results[] = $valueItem;
+            }
+        }
+
+        return ' class="' . implode(' ', $results) . '"';
     }
 
     public function shouldHandle($attribute, $value, array $config): bool

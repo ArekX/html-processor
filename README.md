@@ -65,6 +65,81 @@ echo $renderer->render(['@input', 'type' => 'text']); // Renders: <input type="t
 echo $renderer->render(['/br']); // Renders: <br/>
 ```
 
+## Conditional rendering
+
+You can conditionally render elements or text in arrays. If something is not to be rendered you can pass `false`
+and that part of the rendering will be skipped.
+
+```php
+$condition = false;
+echo $renderer->render([['p', [
+    $condition ? ['strong', 'Item wrapped in strong'] : false,
+    'test'
+]]]); // Renders: <p>test</p>
+```
+
+### Using callbacks
+
+You can also use callbacks in elements to handle conditional rendering. `render($template, $config = [])` function accepts
+additional optional parameter for configuration which will be passed to all callbacks used in the template array.
+
+```php
+echo $renderer->render([['p', [
+    function ($config) {
+        return $config['wrapped'] ? ['strong', 'Item wrapped in strong'] : false;
+    },
+    'test'
+]]], ['wrapped' => true]); // Renders: <p><strong>Item wrapped in strong</strong>test</p> 
+``` 
+
+## Attributes conditional rendering
+
+If you pass `true` to an attribute you will just render that attribute without a value:
+
+**NOTE:** All attribute values rendered are encoded using `htmlspecialchars`.
+
+```php
+echo $renderer->render(['div', 'attribute' => true]); // Renders: <div attribute></div> 
+```
+
+If you pass `false` as a value to any attribute that attribute wont be rendered:
+
+```php
+echo $renderer->render(['div', 'class' => false, 'data-test' => 'test']); // Renders: <div data-test="test"></div> 
+```
+
+Value for attribute can also be a callback:
+
+```php
+echo $renderer->render(['div', 'class' => function($config) {
+    return $config['class'];
+}, 'data-test' => 'test'], ['class' => ['class1', 'class2']]); // Renders: <div class="class1 class2" data-test="test"></div> 
+```
+
+## Special attributes
+
+If you look closely `class="class1 class2"` in above example, it is rendered using `'class' => ['class1', 'class2']`. There are special
+renderers for few fields like `class` and `style` which allows non-string values which can be parsed.
+
+`class` attribute allows an array which will be joined with all `false` values removed. It also allows for a class value to be a callable.
+
+`style` attribute allows for `['property' => 'value']` which will render to `property: value`. Value can also be a callable which will get
+executed to return property value. If a property value is `false` it will be skipped.
+
+
+### Json attributes
+
+You can encode arrays as json in attributes:
+
+```php
+$array = [
+    'key1' => 'value1',
+    'key2' => 'value2'
+];
+echo $renderer->render(['div', 'data-prop' => ['json' => $array]]);
+// Renders: <div data-prop="{&quot;key1&quot;:&quot;value1&quot;,&quot;key2&quot;:&quot;value2&quot;}"></div>
+```
+
 # Testing
 
 * To run tests run `composer test`.
