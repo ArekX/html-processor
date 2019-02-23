@@ -5,7 +5,11 @@ PHP html processor using arrays
 
 Combining html tags is hard. Standard string concatenation just doesn't work, it's hard to sanitize the input
 and it just looks ugly. This approach uses arrays to fully create a 
-structure which nicely translates to HTML.
+structure which nicely translates to HTML. But what about template engines like Blade, Mustache, etc?
+
+This was not supposed to replace them, even though it fully could. This was intended so that it can be used in programmatic places where
+you need to create tags dynamically like recursive menu generators, but do not want to use template engines. Examples for these are 
+widgets which output html or in other places of the code where you would need to output programmatically.
 
 So this:
 ```php
